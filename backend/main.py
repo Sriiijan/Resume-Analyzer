@@ -8,10 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 
-
-# ===============================
 # App Initialization
-# ===============================
+
 app = FastAPI(title="Smart Recruitment API")
 
 app.add_middleware(
@@ -24,9 +22,9 @@ app.add_middleware(
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# ===============================
+
 # Utility Functions
-# ===============================
+
 
 def extract_text_from_pdf(file_bytes):
     text = ""
@@ -47,9 +45,8 @@ def extract_skills(text):
 
     return list(found_skills)
 
-# ===============================
+
 # API Endpoints
-# ===============================
 
 @app.post("/upload-resume")
 async def upload_resume(file: UploadFile = File(...)):
@@ -65,11 +62,11 @@ async def analyze_resume(
     file: UploadFile = File(...),
     job_description: str = Form(...)
 ):
-    # -------- Extract resume text --------
+    # Extract resume text
     pdf_bytes = await file.read()
     resume_text = extract_text_from_pdf(pdf_bytes)
 
-    # -------- Rule-based skill extraction --------
+    # Rule-based skill extraction
     resume_skills = extract_skills(resume_text)
     jd_skills = extract_skills(job_description)
 
@@ -81,17 +78,17 @@ async def analyze_resume(
     else:
         skill_match_score = len(matched_skills) / len(jd_skills)
 
-    # -------- Semantic similarity (SBERT) --------
+    # Semantic similarity (SBERT)
     resume_embedding = model.encode([resume_text])
     jd_embedding = model.encode([job_description])
 
     semantic_score = cosine_similarity(resume_embedding, jd_embedding)[0][0]
     semantic_score = float(semantic_score)  # NumPy → Python float
 
-    # -------- Final Hybrid Score --------
+    # Final Hybrid Score
     final_score = (0.6 * semantic_score) + (0.4 * skill_match_score)
 
-    # -------- Response --------
+    # Response 
     return {
         "semantic_match_percentage": round(semantic_score * 100, 2),
         "skill_match_percentage": round(skill_match_score * 100, 2),

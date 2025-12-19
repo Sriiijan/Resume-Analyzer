@@ -24,7 +24,7 @@ function App() {
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  /* -------------------- File Handling -------------------- */
+
   const handleFileUpload = (file) => {
     if (file && file.type === 'application/pdf') {
       setResumeFile(file);
@@ -56,7 +56,7 @@ function App() {
     setResults(null);
   };
 
-  /* -------------------- API Call -------------------- */
+  // API Call 
   const analyzeResume = async () => {
     if (!resumeFile || !jobDescription.trim()) {
       setError('Please upload a resume and enter a job description');
@@ -102,7 +102,7 @@ function App() {
     }
   };
 
-  /* -------------------- Helpers -------------------- */
+  
   const getScoreLabel = (score) => {
     if (score >= 75) return 'Excellent Match';
     if (score >= 50) return 'Good Match';
@@ -121,7 +121,7 @@ function App() {
     return 'from-red-500 to-rose-600';
   };
 
-  /* -------------------- UI -------------------- */
+
   return (
     <div style={{ 
       minHeight: '100vh', 
